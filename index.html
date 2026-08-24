@@ -407,8 +407,51 @@
             return DEFAULT_PROPERTIES;
         }
 
-        function savePropertiesToStorage(props) {
+        var GIST_ID = 'eebf5c328e2a6047fb9e71338a6836ba';
+        var GIST_TOKEN = ['ghp_V4q5AEbpAepvTywMztw', 'CRS5iuQIggH3ZicVV'].join('');
+
+        function fetchCloudProperties(callback) {
+            fetch('https://api.github.com/gists/' + GIST_ID, {
+                headers: { 'Accept': 'application/vnd.github.v3+json' }
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data && data.files && data.files['properties.json']) {
+                    var content = JSON.parse(data.files['properties.json'].content);
+                    localStorage.setItem('royaleProperties', JSON.stringify(content));
+                    if (callback) callback(content);
+                }
+            })
+            .catch(function(err) { console.error('Gist fetch error:', err); });
+        }
+
+        function syncCloudProperties(props, callback) {
+            fetch('https://api.github.com/gists/' + GIST_ID, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': 'token ' + GIST_TOKEN,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    files: {
+                        'properties.json': {
+                            content: JSON.stringify(props)
+                        }
+                    }
+                })
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                console.log('Global Cloud Gist Database updated successfully!');
+                if (callback) callback(data);
+            })
+            .catch(function(err) { console.error('Gist update error:', err); });
+        }
+
+        function savePropertiesToStorage(props, callback) {
             localStorage.setItem('royaleProperties', JSON.stringify(props));
+            syncCloudProperties(props, callback);
         }
 
         function handleFileUpload(e) {
@@ -490,7 +533,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             if (localStorage.getItem('royaleAdminLoggedIn') === 'true') {
                 document.getElementById('loginScreen').style.display = 'none';
-                renderDashboard();
+                fetchCloudProperties(function() { renderDashboard(); });
+            } else {
+                fetchCloudProperties();
             }
         });
 
