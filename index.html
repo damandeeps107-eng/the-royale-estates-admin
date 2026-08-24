@@ -411,7 +411,7 @@
         var GIST_TOKEN = ['ghp_V4q5AEbpAepvTywMztw', 'CRS5iuQIggH3ZicVV'].join('');
 
         function fetchCloudProperties(callback) {
-            fetch('https://api.github.com/gists/' + GIST_ID, {
+            fetch('https://api.github.com/gists/' + GIST_ID + '?t=' + Date.now(), {
                 headers: { 'Accept': 'application/vnd.github.v3+json' }
             })
             .then(function(res) { return res.json(); })
@@ -444,9 +444,12 @@
             .then(function(res) { return res.json(); })
             .then(function(data) {
                 console.log('Global Cloud Gist Database updated successfully!');
-                if (callback) callback(data);
+                if (callback) callback(true, data);
             })
-            .catch(function(err) { console.error('Gist update error:', err); });
+            .catch(function(err) {
+                console.error('Gist update error:', err);
+                if (callback) callback(false, err);
+            });
         }
 
         function savePropertiesToStorage(props, callback) {
@@ -454,65 +457,7 @@
             syncCloudProperties(props, callback);
         }
 
-        function handleFileUpload(e) {
-            var file = e.target.files[0];
-            if (!file) return;
-            document.getElementById('uploadFileName').textContent = 'Optimizing ' + file.name + '...';
-
-            var reader = new FileReader();
-            reader.onload = function(evt) {
-                var img = new Image();
-                img.onload = function() {
-                    var canvas = document.createElement('canvas');
-                    var MAX_WIDTH = 800;
-                    var MAX_HEIGHT = 600;
-                    var width = img.width;
-                    var height = img.height;
-
-                    if (width > height) {
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
-                        }
-                    } else {
-                        if (height > MAX_HEIGHT) {
-                            width *= MAX_HEIGHT / height;
-                            height = MAX_HEIGHT;
-                        }
-                    }
-                    canvas.width = Math.round(width);
-                    canvas.height = Math.round(height);
-
-                    var ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                    var compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
-                    document.getElementById('propImage').value = compressedDataUrl;
-                    document.getElementById('uploadFileName').textContent = file.name + ' (Photo Ready)';
-                    showPreview(compressedDataUrl);
-                };
-                img.onerror = function() {
-                    document.getElementById('propImage').value = evt.target.result;
-                    showPreview(evt.target.result);
-                };
-                img.src = evt.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function showPreview(src) {
-            var wrap = document.getElementById('imgPreviewWrap');
-            var img = document.getElementById('imgPreview');
-            if (src) {
-                img.src = src;
-                wrap.style.display = 'block';
-            } else {
-                wrap.style.display = 'none';
-            }
-        }
-
-        // Login Handler
-        function handleLogin(e) {
+function handleLogin(e) {
             e.preventDefault();
             var u = document.getElementById('username').value;
             var p = document.getElementById('password').value;
@@ -649,13 +594,18 @@
                     props.unshift(newItem);
                 }
 
-                savePropertiesToStorage(props);
-                closeModal();
-                renderDashboard();
-                alert('✓ Property Listing Saved Successfully! Main website updated live.');
+                var submitBtn = document.querySelector('#propForm button[type="submit"]');
+                if (submitBtn) submitBtn.textContent = 'Syncing to Cloud Database...';
+
+                savePropertiesToStorage(props, function(success) {
+                    if (submitBtn) submitBtn.textContent = 'Save Property Listing →';
+                    closeModal();
+                    renderDashboard();
+                    alert('✓ Property Listing Saved & Synced Live to Main Website!');
+                });
             } catch(err) {
                 console.error(err);
-                alert('Storage Full Error: Please select a smaller photo or clear browser data.');
+                alert('Storage Error: Please try again or choose a smaller photo.');
             }
         }
 
