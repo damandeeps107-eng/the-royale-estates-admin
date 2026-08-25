@@ -531,38 +531,78 @@ function handleLogin(e) {
         }
 
         function openAddModal() {
-            document.getElementById('modalTitle').textContent = 'Add New Property Listing';
-            document.getElementById('propIndex').value = '';
-            document.getElementById('propForm').reset();
-            document.getElementById('uploadFileName').textContent = 'No photo chosen';
-            showPreview('');
-            document.getElementById('propModal').classList.add('active');
+            try {
+                var modalTitle = document.getElementById('modalTitle');
+                if (modalTitle) modalTitle.textContent = 'Add New Property Listing';
+                
+                var propIndex = document.getElementById('propIndex');
+                if (propIndex) propIndex.value = '';
+
+                var propForm = document.getElementById('propForm');
+                if (propForm) propForm.reset();
+
+                var fileName = document.getElementById('uploadFileName');
+                if (fileName) fileName.textContent = 'No photo chosen';
+
+                var propUrlFallback = document.getElementById('propUrlFallback');
+                if (propUrlFallback) propUrlFallback.value = '';
+
+                var propImage = document.getElementById('propImage');
+                if (propImage) propImage.value = '';
+
+                showPreview('');
+            } catch(err) {
+                console.error('Add modal error:', err);
+            }
+            
+            var modal = document.getElementById('propModal');
+            if (modal) {
+                modal.classList.add('active');
+                modal.style.display = 'flex';
+            }
         }
 
         function editProperty(idx) {
-            var props = getProperties();
-            var item = props[idx];
-            if (!item) return;
+            try {
+                var props = getProperties();
+                var item = props[idx];
+                if (!item) return;
 
-            document.getElementById('modalTitle').textContent = 'Edit Property Listing';
-            document.getElementById('propIndex').value = idx;
-            document.getElementById('propTitle').value = item.title;
-            document.getElementById('propCategory').value = item.category;
-            document.getElementById('propBadge').value = item.badge;
-            document.getElementById('propLocation').value = item.location;
-            document.getElementById('propPrice').value = item.price;
-            document.getElementById('propSpecsArea').value = item.specsArea;
-            document.getElementById('propSpecsFeature').value = item.specsFeature;
-            document.getElementById('propImage').value = item.image;
-            document.getElementById('propUrlFallback').value = item.image.startsWith('data:') ? '' : item.image;
-            document.getElementById('uploadFileName').textContent = item.image.startsWith('data:') ? 'Uploaded Photo Attached' : 'Photo Attached';
-            showPreview(item.image);
+                document.getElementById('modalTitle').textContent = 'Edit Property Listing';
+                document.getElementById('propIndex').value = idx;
+                document.getElementById('propTitle').value = item.title || '';
+                document.getElementById('propCategory').value = item.category || 'Warehouse';
+                document.getElementById('propBadge').value = item.badge || 'For Lease';
+                document.getElementById('propLocation').value = item.location || '';
+                document.getElementById('propPrice').value = item.price || '';
+                document.getElementById('propSpecsArea').value = item.specsArea || '';
+                document.getElementById('propSpecsFeature').value = item.specsFeature || '';
+                document.getElementById('propImage').value = item.image || '';
+                
+                var fb = document.getElementById('propUrlFallback');
+                if (fb) fb.value = (item.image && item.image.startsWith('data:')) ? '' : (item.image || '');
 
-            document.getElementById('propModal').classList.add('active');
+                var fn = document.getElementById('uploadFileName');
+                if (fn) fn.textContent = (item.image && item.image.startsWith('data:')) ? 'Uploaded Photo Attached' : 'Photo Attached';
+                
+                showPreview(item.image || '');
+            } catch(err) {
+                console.error('Edit modal error:', err);
+            }
+
+            var modal = document.getElementById('propModal');
+            if (modal) {
+                modal.classList.add('active');
+                modal.style.display = 'flex';
+            }
         }
 
         function closeModal() {
-            document.getElementById('propModal').classList.remove('active');
+            var modal = document.getElementById('propModal');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+            }
         }
 
         function saveProperty(e) {
