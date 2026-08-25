@@ -331,6 +331,69 @@
 
     <!-- ===== JS LOGIC & STORAGE SYNC ===== -->
     <script>
+        function handleFileUpload(e) {
+            var file = e.target ? e.target.files[0] : (e.files ? e.files[0] : null);
+            if (!file) return;
+            
+            var fileNameSpan = document.getElementById('uploadFileName');
+            if (fileNameSpan) fileNameSpan.textContent = 'Optimizing ' + file.name + '...';
+
+            var reader = new FileReader();
+            reader.onload = function(evt) {
+                var img = new Image();
+                img.onload = function() {
+                    var canvas = document.createElement('canvas');
+                    var MAX_WIDTH = 800;
+                    var MAX_HEIGHT = 600;
+                    var width = img.width;
+                    var height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+                    canvas.width = Math.round(width);
+                    canvas.height = Math.round(height);
+
+                    var ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    var compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    var propImgInput = document.getElementById('propImage');
+                    if (propImgInput) propImgInput.value = compressedDataUrl;
+
+                    if (fileNameSpan) fileNameSpan.textContent = file.name + ' (Photo Attached ✓)';
+                    showPreview(compressedDataUrl);
+                };
+                img.onerror = function() {
+                    var propImgInput = document.getElementById('propImage');
+                    if (propImgInput) propImgInput.value = evt.target.result;
+                    if (fileNameSpan) fileNameSpan.textContent = file.name + ' (Photo Attached ✓)';
+                    showPreview(evt.target.result);
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function showPreview(src) {
+            var wrap = document.getElementById('imgPreviewWrap');
+            var img = document.getElementById('imgPreview');
+            if (!wrap || !img) return;
+            if (src) {
+                img.src = src;
+                wrap.style.display = 'block';
+            } else {
+                wrap.style.display = 'none';
+            }
+        }
         var DEFAULT_PROPERTIES = [
             {
                 title: "Industrial Logistics Warehouse",
