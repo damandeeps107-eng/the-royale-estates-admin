@@ -664,14 +664,20 @@ function handleLogin(e) {
                 var propForm = document.getElementById('propForm');
                 if (propForm) propForm.reset();
 
+                var pb = document.getElementById('propBrochure');
+                if (pb) pb.value = '';
+
+                var brochureSpan = document.getElementById('uploadBrochureFileName');
+                if (brochureSpan) brochureSpan.textContent = 'No PDF file selected';
+
                 var fileName = document.getElementById('uploadFileName');
                 if (fileName) fileName.textContent = 'No photo chosen';
-
-                
 
                 var propImage = document.getElementById('propImage');
                 if (propImage) propImage.value = '';
 
+                attachedImagesList = [];
+                renderAttachedPhotoPreviews();
                 showPreview('');
             } catch(err) {
                 console.error('Add modal error:', err);
