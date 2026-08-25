@@ -351,7 +351,13 @@
             if (!file) return;
 
             var fileNameSpan = document.getElementById('uploadBrochureFileName');
-            if (fileNameSpan) fileNameSpan.textContent = 'Reading ' + file.name + '...';
+            if (file.size > 2500000) {
+                alert('The PDF brochure file is too large (over 2.5MB). Please choose a smaller PDF file (under 2MB).');
+                if (fileNameSpan) fileNameSpan.textContent = 'File too large (over 2.5MB)';
+                return;
+            }
+
+            if (fileNameSpan) fileNameSpan.textContent = 'Attaching ' + file.name + '...';
 
             var reader = new FileReader();
             reader.onload = function(evt) {
