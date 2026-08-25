@@ -320,8 +320,15 @@
                     <input type="hidden" id="propImage" required>
                 </div>
                 <div class="form-group" style="margin-top: 14px;">
-                    <label>📄 PDF Brochure Link / Document URL (Optional)</label>
-                    <input type="text" id="propBrochure" placeholder="https://... property_brochure.pdf">
+                    <label>📄 Upload PDF Brochure Document (Device Gallery / Mac Finder - Optional)</label>
+                    <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
+                        <input type="file" id="propBrochureFileInput" accept="application/pdf" style="display: none;" onchange="handleBrochureFileUpload(event)">
+                        <button type="button" class="btn-sm" style="background: linear-gradient(135deg, #d97706, #b45309); color: #ffffff; font-weight: 700; padding: 12px 20px; border-radius: 10px; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; box-shadow: 0 4px 14px rgba(217,119,6,0.4);" onclick="document.getElementById('propBrochureFileInput').click()">
+                            📄 Choose PDF Brochure from Device / Gallery
+                        </button>
+                        <span id="uploadBrochureFileName" style="font-size: 0.88rem; color: #38bdf8; font-weight: 600;">No PDF file chosen</span>
+                    </div>
+                    <input type="hidden" id="propBrochure">
                 </div>
                 <div class="form-group" style="margin-top: 14px;">
                     <label>🎥 Property Video Tour Link / MP4 Video URL (Optional)</label>
@@ -338,6 +345,23 @@
 
     <!-- ===== JS LOGIC & STORAGE SYNC ===== -->
     <script>
+        
+        function handleBrochureFileUpload(e) {
+            var file = e.target ? e.target.files[0] : (e.files ? e.files[0] : null);
+            if (!file) return;
+
+            var fileNameSpan = document.getElementById('uploadBrochureFileName');
+            if (fileNameSpan) fileNameSpan.textContent = 'Reading ' + file.name + '...';
+
+            var reader = new FileReader();
+            reader.onload = function(evt) {
+                var brochureInput = document.getElementById('propBrochure');
+                if (brochureInput) brochureInput.value = evt.target.result;
+                if (fileNameSpan) fileNameSpan.textContent = file.name + ' (PDF Attached ✓)';
+            };
+            reader.readAsDataURL(file);
+        }
+
         function handleFileUpload(e) {
             var file = e.target ? e.target.files[0] : (e.files ? e.files[0] : null);
             if (!file) return;
