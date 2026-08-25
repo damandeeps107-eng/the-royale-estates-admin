@@ -309,20 +309,16 @@
                     <label>Upload Property Photo (Device Gallery / Mac Finder) *</label>
                     <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 8px; flex-wrap: wrap;">
                         <input type="file" id="propFileInput" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
-                        <button type="button" class="btn-sm" style="background: #0284c7; color: #fff; font-weight: 700; padding: 12px 20px; border-radius: 10px; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.95rem;" onclick="document.getElementById('propFileInput').click()">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <button type="button" class="btn-sm" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff; font-weight: 700; padding: 14px 22px; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(2,132,199,0.4);" onclick="document.getElementById('propFileInput').click()">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             📁 Choose Photo from Device / Gallery
                         </button>
                         <span id="uploadFileName" style="font-size: 0.88rem; color: #38bdf8; font-weight: 600;">No photo chosen</span>
                     </div>
-                    <div id="imgPreviewWrap" style="margin-top: 10px; display: none;">
-                        <img id="imgPreview" src="" style="width: 100%; max-height: 180px; object-fit: cover; border-radius: 12px; border: 2px solid #0284c7;">
+                    <div id="imgPreviewWrap" style="margin-top: 12px; display: none;">
+                        <img id="imgPreview" src="" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 12px; border: 2px solid #0284c7;">
                     </div>
                     <input type="hidden" id="propImage" required>
-                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
-                        <label style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; font-weight: 600;">Or Paste External Image URL</label>
-                        <input type="text" id="propUrlFallback" placeholder="https://images.unsplash.com/..." style="margin-top: 4px; font-size: 0.85rem;" oninput="document.getElementById('propImage').value = this.value; showPreview(this.value);">
-                    </div>
                 </div>
 
                 <div style="display: flex; gap: 12px; margin-top: 24px;">
@@ -544,8 +540,7 @@ function handleLogin(e) {
                 var fileName = document.getElementById('uploadFileName');
                 if (fileName) fileName.textContent = 'No photo chosen';
 
-                var propUrlFallback = document.getElementById('propUrlFallback');
-                if (propUrlFallback) propUrlFallback.value = '';
+                
 
                 var propImage = document.getElementById('propImage');
                 if (propImage) propImage.value = '';
@@ -579,8 +574,7 @@ function handleLogin(e) {
                 document.getElementById('propSpecsFeature').value = item.specsFeature || '';
                 document.getElementById('propImage').value = item.image || '';
                 
-                var fb = document.getElementById('propUrlFallback');
-                if (fb) fb.value = (item.image && item.image.startsWith('data:')) ? '' : (item.image || '');
+                
 
                 var fn = document.getElementById('uploadFileName');
                 if (fn) fn.textContent = (item.image && item.image.startsWith('data:')) ? 'Uploaded Photo Attached' : 'Photo Attached';
