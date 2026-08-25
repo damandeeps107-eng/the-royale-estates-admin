@@ -712,7 +712,7 @@ function handleLogin(e) {
                 document.getElementById('propSpecsArea').value = item.specsArea || '';
                 document.getElementById('propSpecsFeature').value = item.specsFeature || '';
                 document.getElementById('propImage').value = item.image || '';
-                var pb = document.getElementById('propBrochure'); if (pb) pb.value = item.brochure || '';
+                var pb = document.getElementById('propBrochure'); if (pb) pb.value = (item.brochure && !item.brochure.includes('dummy.pdf')) ? item.brochure : '';
                 var pv = document.getElementById('propVideo'); if (pv) pv.value = item.video || '';
                 attachedImagesList = (item.images && item.images.length) ? item.images : (item.image ? [item.image] : []); renderAttachedPhotoPreviews();
                 
@@ -754,7 +754,7 @@ function handleLogin(e) {
 
             var bData = document.getElementById('propBrochureData') ? document.getElementById('propBrochureData').value : '';
             var bText = document.getElementById('propBrochure') ? document.getElementById('propBrochure').value : '';
-            var brochureVal = (bData && bData.startsWith('data:')) ? bData : bText;
+            var brochureVal = (bData && bData.startsWith('data:')) ? bData : ((bText && !bText.includes('dummy.pdf')) ? bText : '');
             var videoVal = document.getElementById('propVideo') ? document.getElementById('propVideo').value : '';
             var imagesVal = (attachedImagesList && attachedImagesList.length) ? attachedImagesList : [imgVal];
 
