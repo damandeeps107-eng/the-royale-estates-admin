@@ -320,6 +320,10 @@
                     </div>
                     <input type="hidden" id="propImage" required>
                 </div>
+                <div class="form-group" style="margin-top: 14px;">
+                    <label>PDF Brochure Link / Document URL (Optional)</label>
+                    <input type="text" id="propBrochure" placeholder="https://... property_brochure.pdf">
+                </div>
 
                 <div style="display: flex; gap: 12px; margin-top: 24px;">
                     <button type="button" class="btn-sm btn-outline" style="flex: 1; padding: 12px;" onclick="closeModal()">Cancel</button>
@@ -636,6 +640,7 @@ function handleLogin(e) {
                 document.getElementById('propSpecsArea').value = item.specsArea || '';
                 document.getElementById('propSpecsFeature').value = item.specsFeature || '';
                 document.getElementById('propImage').value = item.image || '';
+                var pb = document.getElementById('propBrochure'); if (pb) pb.value = item.brochure || '';
                 
                 
 
@@ -681,6 +686,7 @@ function handleLogin(e) {
                 price: document.getElementById('propPrice').value,
                 specsArea: document.getElementById('propSpecsArea').value,
                 specsFeature: document.getElementById('propSpecsFeature').value,
+                brochure: document.getElementById('propBrochure') ? document.getElementById('propBrochure').value : '',
                 image: imgVal
             };
 
