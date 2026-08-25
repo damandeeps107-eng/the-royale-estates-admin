@@ -523,18 +523,17 @@
         var GIST_TOKEN = ['ghp_V4q5AEbpAepvTywMztw', 'CRS5iuQIggH3ZicVV'].join('');
 
         function fetchCloudProperties(callback) {
-            fetch('https://api.github.com/gists/' + GIST_ID + '?t=' + Date.now(), {
-                headers: { 'Accept': 'application/vnd.github.v3+json' }
-            })
+            var RAW_GIST_URL = 'https://gist.githubusercontent.com/raw/' + GIST_ID + '/properties.json?t=' + Date.now();
+            fetch(RAW_GIST_URL)
             .then(function(res) { return res.json(); })
-            .then(function(data) {
-                if (data && data.files && data.files['properties.json']) {
-                    var content = JSON.parse(data.files['properties.json'].content);
-                    localStorage.setItem('royaleProperties', JSON.stringify(content));
+            .then(function(content) {
+                if (content && Array.isArray(content)) {
+                    try { localStorage.setItem('royaleProperties', JSON.stringify(content)); } catch(e) {}
                     if (callback) callback(content);
                 }
             })
-            .catch(function(err) { console.error('Gist fetch error:', err); });
+            .catch(function(err) { console.error('Cloud Gist fetch error:', err); });
+        });
         }
 
         function syncCloudProperties(props, callback) {
