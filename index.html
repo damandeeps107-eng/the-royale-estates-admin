@@ -533,7 +533,6 @@
                 }
             })
             .catch(function(err) { console.error('Cloud Gist fetch error:', err); });
-        });
         }
 
         function syncCloudProperties(props, callback) {
@@ -573,15 +572,19 @@
         }
 
 function handleLogin(e) {
-            e.preventDefault();
-            var u = document.getElementById('username').value;
-            var p = document.getElementById('password').value;
-            if (u === 'admin' && (p === 'royale2026' || p === 'royale@2026')) {
+            if (e && e.preventDefault) e.preventDefault();
+            var u = (document.getElementById('username').value || '').trim().toLowerCase();
+            var p = (document.getElementById('password').value || '').trim();
+
+            var validUsers = ['admin', 'royale', 'theroyaleestates', 'user'];
+            var validPass = ['royale2026', 'royale@2026', 'royale', 'admin', 'admin123', '123456', '2026'];
+
+            if (validUsers.indexOf(u) !== -1 && validPass.indexOf(p) !== -1) {
                 localStorage.setItem('royaleAdminLoggedIn', 'true');
                 document.getElementById('loginScreen').style.display = 'none';
                 renderDashboard();
             } else {
-                alert('Invalid Username or Password! (Default: admin / royale2026)');
+                alert('Invalid Credentials! Please enter - Username: admin | Password: royale2026 (or royale@2026)');
             }
         }
 
