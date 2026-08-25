@@ -328,6 +328,7 @@
                         </button>
                         <span id="uploadBrochureFileName" style="font-size: 0.85rem; color: #38bdf8; font-weight: 600;">No PDF file selected</span>
                     </div>
+                    <input type="hidden" id="propBrochureData">
                     <input type="text" id="propBrochure" placeholder="Or paste PDF Document URL / Google Drive link (https://...)">
                 </div>
                 <div class="form-group" style="margin-top: 14px;">
@@ -355,8 +356,12 @@
 
             var reader = new FileReader();
             reader.onload = function(evt) {
-                var brochureInput = document.getElementById('propBrochure');
-                if (brochureInput) brochureInput.value = evt.target.result;
+                var brochureDataInput = document.getElementById('propBrochureData');
+                if (brochureDataInput) brochureDataInput.value = evt.target.result;
+
+                var brochureTextInput = document.getElementById('propBrochure');
+                if (brochureTextInput) brochureTextInput.value = 'Attached File: ' + file.name;
+
                 if (fileNameSpan) fileNameSpan.textContent = file.name + ' (PDF Attached ✓)';
             };
             reader.readAsDataURL(file);
@@ -666,6 +671,7 @@ function handleLogin(e) {
 
                 var pb = document.getElementById('propBrochure');
                 if (pb) pb.value = '';
+                var pbd = document.getElementById('propBrochureData'); if (pbd) pbd.value = '';
 
                 var brochureSpan = document.getElementById('uploadBrochureFileName');
                 if (brochureSpan) brochureSpan.textContent = 'No PDF file selected';
@@ -746,7 +752,9 @@ function handleLogin(e) {
                 return;
             }
 
-            var brochureVal = document.getElementById('propBrochure') ? document.getElementById('propBrochure').value : '';
+            var bData = document.getElementById('propBrochureData') ? document.getElementById('propBrochureData').value : '';
+            var bText = document.getElementById('propBrochure') ? document.getElementById('propBrochure').value : '';
+            var brochureVal = (bData && bData.startsWith('data:')) ? bData : bText;
             var videoVal = document.getElementById('propVideo') ? document.getElementById('propVideo').value : '';
             var imagesVal = (attachedImagesList && attachedImagesList.length) ? attachedImagesList : [imgVal];
 
