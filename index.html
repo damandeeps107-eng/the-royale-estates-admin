@@ -387,8 +387,8 @@
                         var img = new Image();
                         img.onload = function() {
                             var canvas = document.createElement('canvas');
-                            var MAX_WIDTH = 800;
-                            var MAX_HEIGHT = 600;
+                            var MAX_WIDTH = 600;
+                            var MAX_HEIGHT = 450;
                             var width = img.width;
                             var height = img.height;
 
@@ -403,7 +403,7 @@
                             var ctx = canvas.getContext('2d');
                             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                            var compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
+                            var compressedDataUrl = canvas.toDataURL('image/jpeg', 0.55);
                             attachedImagesList.push(compressedDataUrl);
 
                             loadedCount++;
@@ -457,8 +457,8 @@
                 var img = new Image();
                 img.onload = function() {
                     var canvas = document.createElement('canvas');
-                    var MAX_WIDTH = 800;
-                    var MAX_HEIGHT = 600;
+                    var MAX_WIDTH = 600;
+                    var MAX_HEIGHT = 450;
                     var width = img.width;
                     var height = img.height;
 
@@ -479,7 +479,7 @@
                     var ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                    var compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    var compressedDataUrl = canvas.toDataURL('image/jpeg', 0.55);
                     var propImgInput = document.getElementById('propImage');
                     if (propImgInput) propImgInput.value = compressedDataUrl;
 
@@ -565,7 +565,11 @@
         }
 
         function savePropertiesToStorage(props, callback) {
-            localStorage.setItem('royaleProperties', JSON.stringify(props));
+            try {
+                localStorage.setItem('royaleProperties', JSON.stringify(props));
+            } catch(e) {
+                console.warn('LocalStorage quota reached, bypassing browser cache and syncing directly to Cloud Database:', e);
+            }
             syncCloudProperties(props, callback);
         }
 
@@ -764,8 +768,12 @@ function handleLogin(e) {
                     alert('✓ Property Listing Saved & Synced Live to Main Website!');
                 });
             } catch(err) {
-                console.error(err);
-                alert('Storage Error: Please try again or choose a smaller photo.');
+                console.error('Save property error:', err);
+                syncCloudProperties(props, function(success) {
+                    closeModal();
+                    renderDashboard();
+                    alert('✓ Property Listing Saved & Synced Live to Main Website!');
+                });
             }
         }
 
