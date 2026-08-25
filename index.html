@@ -532,10 +532,7 @@
         function syncCloudProperties(props, callback) {
             if (Array.isArray(props)) {
                 props.forEach(function(p) {
-                    if (p.brochure && p.brochure.length > 120000) {
-                        console.warn('Oversized PDF brochure Data URL detected. Replacing with safe fallback to prevent Gist API JSON truncation.');
-                        p.brochure = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
-                    }
+
                     if (p.images && Array.isArray(p.images)) {
                         p.images = p.images.map(function(img) {
                             return (img && img.length > 150000) ? img.substring(0, 150000) : img;
