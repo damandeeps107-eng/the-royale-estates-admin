@@ -763,6 +763,8 @@ function handleLogin(e) {
             var videoVal = document.getElementById('propVideo') ? document.getElementById('propVideo').value : '';
             var imagesVal = (attachedImagesList && attachedImagesList.length) ? attachedImagesList : [imgVal];
 
+            var descVal = document.getElementById('propDescription') ? document.getElementById('propDescription').value.trim() : '';
+
             var newItem = {
                 title: document.getElementById('propTitle').value,
                 category: document.getElementById('propCategory').value,
@@ -771,6 +773,7 @@ function handleLogin(e) {
                 price: document.getElementById('propPrice').value,
                 specsArea: document.getElementById('propSpecsArea').value,
                 specsFeature: document.getElementById('propSpecsFeature').value,
+                description: descVal,
                 brochure: brochureVal,
                 video: videoVal,
                 image: imgVal,
