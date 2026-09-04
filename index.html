@@ -620,16 +620,21 @@
         }
 
         function syncCloudProperties(props, callback) {
-            if (Array.isArray(props)) {
-                props.forEach(function(p) {
-
-                    if (p.images && Array.isArray(p.images)) {
-                        p.images = p.images.map(function(img) {
-                            return (img && img.length > 150000) ? img.substring(0, 150000) : img;
-                        });
-                    }
-                });
-            }
+            var sanitizedProps = (Array.isArray(props) ? props : []).map(function(p) {
+                var cleanP = Object.assign({}, p);
+                if (cleanP.brochure && cleanP.brochure.startsWith('data:') && cleanP.brochure.length > 100000) {
+                    cleanP.brochure = 'https://the-royale-estates.vercel.app/assets/pdf/brochure.pdf';
+                }
+                if (cleanP.image && cleanP.image.length > 100000) {
+                    cleanP.image = 'https://the-royale-estates.vercel.app/assets/images/hero/commercial.jpg';
+                }
+                if (Array.isArray(cleanP.images)) {
+                    cleanP.images = cleanP.images.map(function(img) {
+                        return (img && img.length > 100000) ? 'https://the-royale-estates.vercel.app/assets/images/hero/commercial.jpg' : img;
+                    });
+                }
+                return cleanP;
+            });
 
             fetch('https://api.github.com/gists/' + GIST_ID, {
                 method: 'PATCH',
@@ -641,7 +646,7 @@
                 body: JSON.stringify({
                     files: {
                         'properties.json': {
-                            content: JSON.stringify(props)
+                            content: JSON.stringify(sanitizedProps)
                         }
                     }
                 })
