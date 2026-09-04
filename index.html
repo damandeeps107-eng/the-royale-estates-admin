@@ -87,6 +87,42 @@
         .stat-card h4 { color: var(--text-sub); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; }
         .stat-card .value { font-size: 2rem; font-weight: 800; color: var(--accent-cyan); }
 
+        /* Category Pills & Quick Links */
+        .cat-bar-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .cat-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-sub);
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .cat-pill:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--accent-cyan);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .cat-pill.active {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            border-color: var(--accent-cyan);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+        }
+
         /* Tables & Lists */
         .data-table-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
@@ -173,23 +209,31 @@
 
         <!-- Main Content Panel -->
         <div class="main-content">
-            <!-- Stats -->
-            <div class="stats-grid">
+            <!-- Stats Grid for All 5 Core Deal Categories -->
+            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px;">
                 <div class="stat-card">
-                    <h4>Total Properties</h4>
-                    <div class="value" id="statTotalProps">6</div>
+                    <h4>Total Listings</h4>
+                    <div class="value" id="statTotalProps">0</div>
                 </div>
                 <div class="stat-card">
-                    <h4>Warehouses</h4>
-                    <div class="value" id="statWarehouses">2</div>
+                    <h4>🏭 Warehouses</h4>
+                    <div class="value" id="statWarehouses">0</div>
                 </div>
                 <div class="stat-card">
-                    <h4>Commercial Offices</h4>
-                    <div class="value" id="statCommercial">2</div>
+                    <h4>🏢 Offices</h4>
+                    <div class="value" id="statCommercial">0</div>
                 </div>
                 <div class="stat-card">
-                    <h4>Villas & Land</h4>
-                    <div class="value" id="statVillas">2</div>
+                    <h4>🏡 Weekend &amp; Villas</h4>
+                    <div class="value" id="statWeekend">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>🏞️ Land / Plots</h4>
+                    <div class="value" id="statLand">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>🔥 Pre-Leased</h4>
+                    <div class="value" id="statPreleased">0</div>
                 </div>
             </div>
 
@@ -223,6 +267,43 @@
 
             <!-- Tab 2: Leads List -->
             <div id="tabLeads" style="display: none;">
+                <!-- 5 Core Deal Categories Bar -->
+                <div class="cat-bar-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                        <div>
+                            <h3 style="font-size: 1.15rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">
+                                <span>⭐</span> Our 5 Core Property Deal Categories
+                            </h3>
+                            <p style="font-size: 0.85rem; color: var(--text-sub); margin-top: 4px;">
+                                Select any category to filter client inquiries or jump directly to live website listings
+                            </p>
+                        </div>
+                        <a href="https://the-royale-estates.vercel.app/home.html#properties" target="_blank" class="btn-sm btn-outline" style="display: inline-flex; align-items: center; gap: 6px;">
+                            Live Category Listings ↗
+                        </a>
+                    </div>
+                    <div class="category-quick-links" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <button class="cat-pill active" onclick="filterLeadsByCat('all', this)">
+                            <span>📋</span> All Inquiries
+                        </button>
+                        <button class="cat-pill" onclick="filterLeadsByCat('Warehouse', this)">
+                            <span>🏭</span> Warehouse / Industrial
+                        </button>
+                        <button class="cat-pill" onclick="filterLeadsByCat('Office Space', this)">
+                            <span>🏢</span> Commercial Office
+                        </button>
+                        <button class="cat-pill" onclick="filterLeadsByCat('Weekend Home', this)">
+                            <span>🏡</span> Weekend Home &amp; Villas
+                        </button>
+                        <button class="cat-pill" onclick="filterLeadsByCat('Land / Plot', this)">
+                            <span>🏞️</span> Land / Plots
+                        </button>
+                        <button class="cat-pill" onclick="filterLeadsByCat('Pre-Leased', this)">
+                            <span>🔥</span> Pre-Leased Property (7.5% - 8.5% ROI)
+                        </button>
+                    </div>
+                </div>
+
                 <div class="page-title">
                     <h1>Client Inquiries & WhatsApp Leads</h1>
                 </div>
@@ -634,12 +715,15 @@ function handleLogin(e) {
             var tbody = document.getElementById('propertiesTableBody');
             tbody.innerHTML = '';
 
-            var warehouseCnt = 0, commercialCnt = 0, villaCnt = 0;
+            var warehouseCnt = 0, commercialCnt = 0, weekendCnt = 0, landCnt = 0, preleasedCnt = 0;
 
             props.forEach(function(item, idx) {
-                if (item.category === 'Warehouse') warehouseCnt++;
-                if (item.category === 'Commercial' || item.category === 'Office Space') commercialCnt++;
-                if (item.category === 'Villa' || item.category === 'Land / Plot') villaCnt++;
+                var cat = (item.category || '').toLowerCase();
+                if (cat.indexOf('warehouse') !== -1 || cat.indexOf('industrial') !== -1) warehouseCnt++;
+                else if (cat.indexOf('office') !== -1 || cat.indexOf('commercial') !== -1) commercialCnt++;
+                else if (cat.indexOf('weekend') !== -1 || cat.indexOf('villa') !== -1 || cat.indexOf('farmhouse') !== -1) weekendCnt++;
+                else if (cat.indexOf('land') !== -1 || cat.indexOf('plot') !== -1) landCnt++;
+                else if (cat.indexOf('pre-leased') !== -1 || cat.indexOf('preleased') !== -1) preleasedCnt++;
 
                 var tr = document.createElement('tr');
                 tr.innerHTML = '<td><img src="' + item.image + '" class="prop-thumb" onerror="this.src=\'https://the-royale-estates.vercel.app/assets/images/hero/commercial.jpg\'"></td>' +
@@ -656,10 +740,12 @@ function handleLogin(e) {
                 tbody.appendChild(tr);
             });
 
-            document.getElementById('statTotalProps').textContent = props.length;
-            document.getElementById('statWarehouses').textContent = warehouseCnt;
-            document.getElementById('statCommercial').textContent = commercialCnt;
-            document.getElementById('statVillas').textContent = villaCnt;
+            if (document.getElementById('statTotalProps')) document.getElementById('statTotalProps').textContent = props.length;
+            if (document.getElementById('statWarehouses')) document.getElementById('statWarehouses').textContent = warehouseCnt;
+            if (document.getElementById('statCommercial')) document.getElementById('statCommercial').textContent = commercialCnt;
+            if (document.getElementById('statWeekend')) document.getElementById('statWeekend').textContent = weekendCnt;
+            if (document.getElementById('statLand')) document.getElementById('statLand').textContent = landCnt;
+            if (document.getElementById('statPreleased')) document.getElementById('statPreleased').textContent = preleasedCnt;
         }
 
         function openAddModal() {
@@ -815,6 +901,18 @@ function handleLogin(e) {
             }
         }
 
+        var currentLeadCategoryFilter = 'all';
+
+        function filterLeadsByCat(cat, btn) {
+            currentLeadCategoryFilter = cat;
+            if (btn) {
+                var pills = document.querySelectorAll('#tabLeads .cat-pill');
+                pills.forEach(function(p) { p.classList.remove('active'); });
+                btn.classList.add('active');
+            }
+            renderLeads();
+        }
+
         function renderLeads() {
             var leads = [];
             var stored = localStorage.getItem('royaleEnquiries');
@@ -822,15 +920,27 @@ function handleLogin(e) {
                 try { leads = JSON.parse(stored); } catch(e) {}
             }
 
+            var filteredLeads = leads;
+            if (currentLeadCategoryFilter && currentLeadCategoryFilter !== 'all') {
+                var target = currentLeadCategoryFilter.toLowerCase();
+                filteredLeads = leads.filter(function(lead) {
+                    var type = (lead.propertyType || '').toLowerCase();
+                    return type.indexOf(target) !== -1 || target.indexOf(type) !== -1;
+                });
+            }
+
             var tbody = document.getElementById('leadsTableBody');
             tbody.innerHTML = '';
 
-            if (leads.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:32px; color:#94a3b8;">No client enquiries received yet. Form submissions on website will show up here!</td></tr>';
+            if (filteredLeads.length === 0) {
+                var msg = leads.length === 0 ? 
+                    'No client enquiries received yet. Form submissions on website will show up here!' :
+                    'No inquiries found for selected category filter ("' + currentLeadCategoryFilter + '").';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:32px; color:#94a3b8;">' + msg + '</td></tr>';
                 return;
             }
 
-            leads.forEach(function(lead) {
+            filteredLeads.forEach(function(lead) {
                 var tr = document.createElement('tr');
                 tr.innerHTML = '<td><strong>' + lead.name + '</strong></td>' +
                     '<td>' + lead.phone + '</td>' +
