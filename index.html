@@ -348,10 +348,10 @@
                     <div class="form-group">
                         <label>Category *</label>
                         <select id="propCategory" required>
-                            <option value="Warehouse">1. Warehouse / Industrial</option>
-                            <option value="Office Space">2. Commercial Office</option>
-                            <option value="Weekend Home">3. Weekend Home &amp; Villas</option>
-                            <option value="Land / Plot">4. Land</option>
+                            <option value="Warehouse">1. 🏭 Warehouse / Industrial</option>
+                            <option value="Commercial Office">2. 🏢 Commercial Office</option>
+                            <option value="Weekend Home">3. 🏡 Weekend Home &amp; Villas</option>
+                            <option value="Land / Plot">4. 🏞️ Land / Plots</option>
                             <option value="Pre-Leased">5. 🔥 Pre-Leased Property (7.5% - 8.5% ROI)</option>
                         </select>
                     </div>
@@ -719,11 +719,21 @@ function handleLogin(e) {
 
             props.forEach(function(item, idx) {
                 var cat = (item.category || '').toLowerCase();
-                if (cat.indexOf('warehouse') !== -1 || cat.indexOf('industrial') !== -1) warehouseCnt++;
-                else if (cat.indexOf('office') !== -1 || cat.indexOf('commercial') !== -1) commercialCnt++;
-                else if (cat.indexOf('weekend') !== -1 || cat.indexOf('villa') !== -1 || cat.indexOf('farmhouse') !== -1) weekendCnt++;
-                else if (cat.indexOf('land') !== -1 || cat.indexOf('plot') !== -1) landCnt++;
-                else if (cat.indexOf('pre-leased') !== -1 || cat.indexOf('preleased') !== -1) preleasedCnt++;
+                var title = (item.title || '').toLowerCase();
+
+                if (cat.indexOf('pre-leased') !== -1 || cat.indexOf('preleased') !== -1 || title.indexOf('pre lease') !== -1 || title.indexOf('pre-leased') !== -1) {
+                    preleasedCnt++;
+                } else if (cat.indexOf('office') !== -1 || cat.indexOf('commercial') !== -1 || cat.indexOf('retail') !== -1 || cat.indexOf('shop') !== -1 || title.indexOf('office') !== -1 || title.indexOf('commercial') !== -1) {
+                    commercialCnt++;
+                } else if (cat.indexOf('warehouse') !== -1 || cat.indexOf('industrial') !== -1 || cat.indexOf('godown') !== -1 || title.indexOf('warehouse') !== -1 || title.indexOf('industrial') !== -1) {
+                    warehouseCnt++;
+                } else if (cat.indexOf('weekend') !== -1 || cat.indexOf('villa') !== -1 || cat.indexOf('farmhouse') !== -1 || title.indexOf('villa') !== -1) {
+                    weekendCnt++;
+                } else if (cat.indexOf('land') !== -1 || cat.indexOf('plot') !== -1 || title.indexOf('land') !== -1) {
+                    landCnt++;
+                } else {
+                    commercialCnt++;
+                }
 
                 var tr = document.createElement('tr');
                 tr.innerHTML = '<td><img src="' + item.image + '" class="prop-thumb" onerror="this.src=\'https://the-royale-estates.vercel.app/assets/images/hero/commercial.jpg\'"></td>' +
@@ -795,7 +805,24 @@ function handleLogin(e) {
                 document.getElementById('modalTitle').textContent = 'Edit Property Listing';
                 document.getElementById('propIndex').value = idx;
                 document.getElementById('propTitle').value = item.title || '';
-                document.getElementById('propCategory').value = item.category || 'Warehouse';
+                
+                var cat = item.category || 'Warehouse';
+                var catLower = cat.toLowerCase();
+                var selectElem = document.getElementById('propCategory');
+                if (catLower.includes('office') || catLower.includes('commercial')) {
+                    selectElem.value = 'Commercial Office';
+                } else if (catLower.includes('warehouse') || catLower.includes('industrial')) {
+                    selectElem.value = 'Warehouse';
+                } else if (catLower.includes('weekend') || catLower.includes('villa') || catLower.includes('farmhouse')) {
+                    selectElem.value = 'Weekend Home';
+                } else if (catLower.includes('land') || catLower.includes('plot')) {
+                    selectElem.value = 'Land / Plot';
+                } else if (catLower.includes('pre-leased') || catLower.includes('preleased')) {
+                    selectElem.value = 'Pre-Leased';
+                } else {
+                    selectElem.value = cat;
+                }
+
                 document.getElementById('propBadge').value = item.badge || 'For Lease';
                 document.getElementById('propLocation').value = item.location || '';
                 document.getElementById('propPrice').value = item.price || '';
@@ -807,8 +834,6 @@ function handleLogin(e) {
                 var pv = document.getElementById('propVideo'); if (pv) pv.value = item.video || '';
                 attachedImagesList = (item.images && item.images.length) ? item.images : (item.image ? [item.image] : []); renderAttachedPhotoPreviews();
                 
-                
-
                 var fn = document.getElementById('uploadFileName');
                 if (fn) fn.textContent = (item.image && item.image.startsWith('data:')) ? 'Uploaded Photo Attached' : 'Photo Attached';
                 
@@ -925,7 +950,22 @@ function handleLogin(e) {
                 var target = currentLeadCategoryFilter.toLowerCase();
                 filteredLeads = leads.filter(function(lead) {
                     var type = (lead.propertyType || '').toLowerCase();
-                    return type.indexOf(target) !== -1 || target.indexOf(type) !== -1;
+                    if (target.includes('office') || target.includes('commercial')) {
+                        return type.includes('office') || type.includes('commercial') || type.includes('shop') || type.includes('showroom') || type.includes('space');
+                    }
+                    if (target.includes('warehouse') || target.includes('industrial')) {
+                        return type.includes('warehouse') || type.includes('industrial') || type.includes('godown');
+                    }
+                    if (target.includes('weekend') || target.includes('villa')) {
+                        return type.includes('weekend') || type.includes('villa') || type.includes('farmhouse');
+                    }
+                    if (target.includes('land') || target.includes('plot')) {
+                        return type.includes('land') || type.includes('plot');
+                    }
+                    if (target.includes('pre-leased') || target.includes('preleased')) {
+                        return type.includes('pre-leased') || type.includes('preleased') || type.includes('lease');
+                    }
+                    return type.includes(target) || target.includes(type);
                 });
             }
 
