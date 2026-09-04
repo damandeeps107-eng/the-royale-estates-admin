@@ -1,0 +1,39 @@
+name: 🏥 Daily Health Check
+
+on:
+  schedule:
+    - cron: '30 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Main Website
+        run: |
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" https://the-royale-estates.vercel.app)
+          [ "$STATUS" = "200" ] && echo "✅ Website OK" || (echo "❌ Website DOWN: $STATUS" && exit 1)
+
+      - name: Check Gist DB and Categories
+        env:
+          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+        run: |
+          python3 - <<'PYEOF'
+          import json, urllib.request, ssl, sys, os
+          GIST_TOKEN = os.environ.get("GIST_TOKEN", "")
+          GIST_ID = "eebf5c328e2a6047fb9e71338a6836ba"
+          VALID_SLUGS = {'warehouse-industrial','commercial-office','weekend-home-villas','land-plots','pre-leased'}
+          ctx = ssl.create_default_context()
+          req = urllib.request.Request(f"https://api.github.com/gists/{GIST_ID}",
+              headers={"Authorization": f"token {GIST_TOKEN}", "Accept": "application/vnd.github.v3+json", "User-Agent": "healthcheck"})
+          with urllib.request.urlopen(req, context=ctx, timeout=15) as r:
+              gist = json.loads(r.read())
+          props = json.loads(gist["files"]["properties.json"]["content"])
+          print(f"✅ DB OK: {len(props)} properties")
+          bad = [p for p in props if p.get("category","").strip() not in VALID_SLUGS]
+          if bad:
+              [print(f"❌ Bad category: {p.get('title','')} -> {p.get('category','')}") for p in bad]
+              sys.exit(1)
+          print("✅ All categories canonical")
+          print("🎉 ALL CLEAR!")
+          PYEOF
