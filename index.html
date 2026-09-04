@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Royale Estates — Admin Console</title>
-    <link rel="icon" type="image/png" href="https://the-royale-estates.vercel.app/assets/images/logo-circle.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://api.github.com" crossorigin>
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -741,7 +744,7 @@ function handleLogin(e) {
                 }
 
                 var tr = document.createElement('tr');
-                tr.innerHTML = '<td><img src="' + item.image + '" class="prop-thumb" onerror="this.src=\'https://the-royale-estates.vercel.app/assets/images/hero/commercial.jpg\'"></td>' +
+                tr.innerHTML = '<td><img src="' + item.image + '" class="prop-thumb" loading="lazy" decoding="async" onerror="this.src=\'https://the-royale-estates.vercel.app/assets/images/hero/commercial.jpg\'"></td>' +
                     '<td><strong>' + item.title + '</strong></td>' +
                     '<td>' + item.category + '</td>' +
                     '<td>' + item.location + '</td>' +
