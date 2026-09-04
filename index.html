@@ -624,16 +624,18 @@
 
         function syncCloudProperties(props, callback) {
             var sanitizedProps = (Array.isArray(props) ? props : []).map(function(p) {
+                var cleanP = Object.assign({}, p);
                 // Preserve PDF brochures: only cap if base64 data exceeds 5MB (5,000,000 chars). Never overwrite http/https links!
                 if (cleanP.brochure && cleanP.brochure.startsWith('data:') && cleanP.brochure.length > 5000000) {
                     cleanP.brochure = '';
                 }
-                if (cleanP.image && cleanP.image.length > 100000) {
+                // Preserve uploaded photos: allow up to 2MB (2,000,000 chars). Never overwrite http/https URLs!
+                if (cleanP.image && cleanP.image.startsWith('data:') && cleanP.image.length > 2000000) {
                     cleanP.image = 'https://the-royale-estates.vercel.app/assets/images/hero/commercial.jpg';
                 }
                 if (Array.isArray(cleanP.images)) {
                     cleanP.images = cleanP.images.map(function(img) {
-                        return (img && img.length > 100000) ? 'https://the-royale-estates.vercel.app/assets/images/hero/commercial.jpg' : img;
+                        return (img && img.startsWith('data:') && img.length > 2000000) ? 'https://the-royale-estates.vercel.app/assets/images/hero/commercial.jpg' : img;
                     });
                 }
                 return cleanP;
