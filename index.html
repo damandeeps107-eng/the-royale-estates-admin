@@ -624,9 +624,9 @@
 
         function syncCloudProperties(props, callback) {
             var sanitizedProps = (Array.isArray(props) ? props : []).map(function(p) {
-                var cleanP = Object.assign({}, p);
-                if (cleanP.brochure && cleanP.brochure.startsWith('data:') && cleanP.brochure.length > 100000) {
-                    cleanP.brochure = 'https://the-royale-estates.vercel.app/assets/pdf/brochure.pdf';
+                // Preserve PDF brochures: only cap if base64 data exceeds 5MB (5,000,000 chars). Never overwrite http/https links!
+                if (cleanP.brochure && cleanP.brochure.startsWith('data:') && cleanP.brochure.length > 5000000) {
+                    cleanP.brochure = '';
                 }
                 if (cleanP.image && cleanP.image.length > 100000) {
                     cleanP.image = 'https://the-royale-estates.vercel.app/assets/images/hero/commercial.jpg';
